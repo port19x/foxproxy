@@ -23,5 +23,5 @@ jobs:
             ./fp.tar => /home/
           last_ssh: |
             docker image load --input /home/fp.tar
-            docker stop -t 2 fox
-            docker run -p 40002:80 -d foxproxy --name fox
+            docker ps | grep fox && docker stop -t 2 fox
+            docker run -p 40002:80 -d --name fox --rm foxproxy
