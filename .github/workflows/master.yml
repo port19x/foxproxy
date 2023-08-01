@@ -1,0 +1,26 @@
+name: Build and publish a Docker image to ghcr.io
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  docker_publish:
+    runs-on: "ubuntu-20.04"
+    steps:
+      - uses: actions/checkout@v3
+      - name: Build Docker Image
+        run: docker image build -t foxproxy .
+      - name: Save Docker Image
+        run: docker save foxproxy -o fp.tar
+      - name: scp ssh pipelines
+        uses: cross-the-world/ssh-scp-ssh-pipelines@latest
+        with:
+          host: hsnipe.moe
+          user: root
+          key: ${{secrets.SSH_KEY}}
+          scp: |
+            ./fp.tar => /home/
+          last_ssh: |
+            docker image load --input /home/fp.tar
+            docker run -p 40002:80 -d foxproxy
