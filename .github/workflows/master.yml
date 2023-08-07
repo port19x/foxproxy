@@ -18,7 +18,6 @@ jobs:
           docker image build \
           --label owner="$GITHUB_REPOSITORY_OWNER" \
           --label port="$PORT" \
-          --label route="/$REPO_NAME" \
           -t "$REPO_NAME" .
       - name: Save Docker Image
         run: docker save "$REPO_NAME" -o "$REPO_NAME".tar
