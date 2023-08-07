@@ -9,9 +9,10 @@ jobs:
     runs-on: "ubuntu-22.04"
     steps:
       - uses: actions/checkout@v3
-      - name: Retrieve Repo Name
+      - name: Setup Environment
         run: |
           echo "REPO_NAME=${GITHUB_REPOSITORY#$GITHUB_REPOSITORY_OWNER/}" >> $GITHUB_ENV
+          echo "PORT=5$(date +%M%S)" >> $GITHUB_ENV
       - name: Build Docker Image
         run: docker image build --label owner="$GITHUB_REPOSITORY_OWNER" -t "$REPO_NAME" .
       - name: Save Docker Image
@@ -27,4 +28,4 @@ jobs:
           last_ssh: |
             docker image load --input "/home/$REPO_NAME.tar"
             docker stop -t 2 "$REPO_NAME" || true
-            docker run -p 40002:80 -d --name "$REPO_NAME" --rm "$REPO_NAME"
+            docker run -p $PORT:80 -d --name "$REPO_NAME" --rm "$REPO_NAME"
