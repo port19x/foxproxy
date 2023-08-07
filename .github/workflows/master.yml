@@ -14,7 +14,12 @@ jobs:
           echo "REPO_NAME=${GITHUB_REPOSITORY#$GITHUB_REPOSITORY_OWNER/}" >> $GITHUB_ENV
           echo "PORT=5$(date +%M%S)" >> $GITHUB_ENV
       - name: Build Docker Image
-        run: docker image build --label owner="$GITHUB_REPOSITORY_OWNER" --label port="$PORT" -t "$REPO_NAME" .
+        run: | 
+          docker image build 
+          --label owner="$GITHUB_REPOSITORY_OWNER" 
+          --label port="$PORT" 
+          --label route="/$REPO_NAME"
+          -t "$REPO_NAME" .
       - name: Save Docker Image
         run: docker save "$REPO_NAME" -o "$REPO_NAME".tar
       - name: scp ssh pipelines
