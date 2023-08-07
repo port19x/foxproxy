@@ -13,11 +13,11 @@ jobs:
         run: |
           echo "REPO_NAME=${GITHUB_REPOSITORY#$GITHUB_REPOSITORY_OWNER/}" >> $GITHUB_ENV
       - name: Debug Repo name
-        run: echo $REPO_NAME
+        run: echo $GITHUB_REPOSITORY_OWNER
       - name: Build Docker Image
-        run: docker image build -t foxproxy .
+        run: docker image build -t "$REPO_NAME" .
       - name: Save Docker Image
-        run: docker save foxproxy -o fp.tar
+        run: docker save "$REPO_NAME" -o "$REPO_NAME".tar
       - name: scp ssh pipelines
         uses: cross-the-world/ssh-scp-ssh-pipelines@latest
         with:
@@ -25,8 +25,8 @@ jobs:
           user: root
           key: ${{secrets.SSH_KEY}}
           scp: |
-            ./fp.tar => /home/
+            "./$REPO_NAME.tar" => /home/
           last_ssh: |
-            docker image load --input /home/fp.tar
-            docker stop -t 2 fox || true
-            docker run -p 40002:80 -d --name fox --rm foxproxy
+            docker image load --input "/home/$REPO_NAME.tar"
+            docker stop -t 2 "$REPO_NAME" || true
+            docker run -p 40002:80 -d --name "$REPO_NAME" --rm "$REPO_NAME"
