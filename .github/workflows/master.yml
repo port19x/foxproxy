@@ -1,8 +1,6 @@
 name: Push built docker image straight over the wire
 on:
   push:
-  schedule:
-    - cron: '00 00 * * 1'
 
 jobs:
   docker_catapult:
